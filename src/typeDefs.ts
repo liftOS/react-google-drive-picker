@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type CallbackDoc = {
   downloadUrl?: string
   uploadState?: string
@@ -32,7 +33,7 @@ export type authResult =  {
   prompt: string;
 }
 
-type ViewIdOptions =
+export type ViewIdOptions =
   | 'DOCS'
   | 'DOCS_IMAGES'
   | 'DOCS_IMAGES_AND_VIDEOS'
@@ -62,10 +63,12 @@ export type PickerConfiguration = {
   showUploadView?: boolean
   showUploadFolders?: boolean
   setParentFolder?: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   customViews?: any[]
   locale?: string
   customScopes?: string[]
+  navHidden?: boolean;
+  filterImagesAndVideos?: boolean;
+  filterPDFs?: boolean;
   callbackFunction: (data: PickerCallback) => any
 }
 

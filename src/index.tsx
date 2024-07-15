@@ -12,7 +12,7 @@ import useInjectScript from './useInjectScript'
 
 export default function useDrivePicker(): [
   (config: PickerConfiguration) => boolean | undefined,
-  authResult | undefined
+  authResult | undefined,
 ] {
   const defaultScopes = ['https://www.googleapis.com/auth/drive.readonly']
   const [loaded, error] = useInjectScript('https://apis.google.com/js/api.js')
@@ -21,7 +21,6 @@ export default function useDrivePicker(): [
   )
   const [pickerApiLoaded, setpickerApiLoaded] = useState(false)
   const [openAfterAuth, setOpenAfterAuth] = useState(false)
-  const [authWindowVisible, setAuthWindowVisible] = useState(false)
   const [config, setConfig] =
     useState<PickerConfiguration>(defaultConfiguration)
   const [authRes, setAuthRes] = useState<authResult>()
@@ -103,7 +102,7 @@ export default function useDrivePicker(): [
   const createPicker = ({
     token,
     appId = '',
-    supportDrives = false,
+    supportDrives = true,
     developerKey,
     viewId = 'DOCS',
     disabled,
@@ -115,10 +114,13 @@ export default function useDrivePicker(): [
     viewMimeTypes,
     customViews,
     locale = 'en',
-    setIncludeFolders,
+    setIncludeFolders = false,
     setSelectFolderEnabled,
     disableDefaultView = false,
     callbackFunction,
+    navHidden = false,
+    filterImagesAndVideos = false,
+    filterPDFs = false,
   }: PickerConfiguration) => {
     if (disabled) return false
 
@@ -130,8 +132,24 @@ export default function useDrivePicker(): [
     const uploadView = new google.picker.DocsUploadView()
     if (viewMimeTypes) uploadView.setMimeTypes(viewMimeTypes)
     if (showUploadFolders) uploadView.setIncludeFolders(true)
-    if (setParentFolder) uploadView.setParent(setParentFolder)
-    if (setParentFolder) view.setParent(setParentFolder)
+    if (setParentFolder) {
+      uploadView.setParent(setParentFolder)
+      view.setParent(setParentFolder)
+    }
+
+    const sharedDriveView = new google.picker.DocsView()
+    if (setIncludeFolders) sharedDriveView.setIncludeFolders(true)
+    if (setSelectFolderEnabled) sharedDriveView.setSelectFolderEnabled(true)
+    if (supportDrives) sharedDriveView.setEnableDrives(true)
+
+    const foldersView = new google.picker.DocsView(google.picker.ViewId.FOLDERS)
+    if (setIncludeFolders) foldersView.setIncludeFolders(true)
+    if (setSelectFolderEnabled) foldersView.setSelectFolderEnabled(true)
+
+    const imagesAndVideos = new google.picker.DocsView(
+      google.picker.ViewId.DOCS_IMAGES_AND_VIDEOS
+    )
+    const pdfs = new google.picker.DocsView(google.picker.ViewId.PDFS)
 
     picker = new google.picker.PickerBuilder()
       .setAppId(appId)
@@ -148,6 +166,25 @@ export default function useDrivePicker(): [
       picker.addView(view)
     }
 
+    picker.addView(foldersView)
+
+    if (supportDrives) {
+      picker.addView(sharedDriveView)
+      picker.enableFeature(google.picker.Feature.SUPPORT_DRIVES)
+    }
+
+    if (filterImagesAndVideos) {
+      picker.addView(imagesAndVideos)
+    }
+
+    if (filterPDFs) {
+      picker.addView(pdfs)
+    }
+
+    if (navHidden) {
+      picker.enableFeature(google.picker.Feature.NAV_HIDDEN)
+    }
+
     if (customViews) {
       customViews.map((view) => picker.addView(view))
     }
@@ -157,10 +194,6 @@ export default function useDrivePicker(): [
     }
 
     if (showUploadView) picker.addView(uploadView)
-
-    if (supportDrives) {
-      picker.enableFeature(google.picker.Feature.SUPPORT_DRIVES)
-    }
 
     picker.build().setVisible(true)
     return true

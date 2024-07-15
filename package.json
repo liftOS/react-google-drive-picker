@@ -8,16 +8,17 @@
     "build": "tsc",
     "watch": "tsc -w",
     "dev": "nodemon ./dist/index.js",
+    "esbuild": "esbuild dist/**/*.{js,ts,tsx} --outdir=dist --minify --allow-overwrite",
     "lint": "eslint 'src/**/*.{js,ts,tsx}' --fix",
     "format": "prettier --write ./src/*"
   },
-  "author": "Jose-cd",
+  "author": "liftOS",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Jose-cd/React-google-drive-picker.git"
+    "url": "https://github.com/liftOS/react-google-drive-picker.git"
   },
   "bugs": {
-    "url": "https://github.com/Jose-cd/React-google-drive-picker/issues"
+    "url": "https://github.com/liftOS/react-google-drive-picker/issues"
   },
   "license": "MIT",
   "keywords": [
@@ -30,19 +31,20 @@
     "@types/react": "^17.0.5",
     "@typescript-eslint/eslint-plugin": "^4.23.0",
     "@typescript-eslint/parser": "^4.23.0",
+    "esbuild": "^0.23.0",
     "eslint": "^7.26.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-plugin-import": "^2.23.2",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.30.0",
     "eslint-plugin-react-hooks": "^4.2.0",
-    "nodemon": "^2.0.7",
-    "prettier": "2.3.2",
+    "nodemon": "^3.1.4",
+    "prettier": "^3.3.3",
     "prettier-eslint": "^12.0.0",
-    "typescript": "^4.2.4"
+    "typescript": "^5.5.3"
   },
   "peerDependencies": {
-    "react": ">=17.0.0",
-    "react-dom": ">=17.0.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   }
 }
