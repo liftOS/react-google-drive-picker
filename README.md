@@ -12,18 +12,18 @@ Google drive picker custom hook.
 
 With npm
 ```
-npm i react-google-drive-picker
+npm i @liftos-js/react-google-drive-picker
 ```
 With yarn
 ```
-yarn add react-google-drive-picker
+yarn add @liftos-js/react-google-drive-picker
 ```
 
 ### Usage
 
 ```js
 import  { useEffect } from 'react';
-import useDrivePicker from 'react-google-drive-picker'
+import useDrivePicker from '@liftos-js/react-google-drive-picker'
 
 
 function App() {
