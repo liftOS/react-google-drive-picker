@@ -36,9 +36,11 @@ function App() {
       viewId: "DOCS",
       // token: token, // pass oauth token in case you already have one
       showUploadView: true,
-      showUploadFolders: true,
-      supportDrives: true,
+      showUploadFolders: true, 
+      supportDrives: true, // shared drives feature enable and display on navbar
       multiselect: true,
+      filterImagesAndVideos: true // images and videos menu activated on navbar
+      filterPDFs: true // pdfs menu activated on navbar
       // customViews: customViewsArray, // custom view
       callbackFunction: (data) => {
         if (data.action === 'cancel') {
@@ -82,6 +84,8 @@ export default App;
 | supportDrives    |  boolean |     false        |    Support shared drives      |
 | showUploadView   |  boolean |     false        |     Enable upload view        |
 | showUploadFolders|  boolean |     false        |Enable folder selection(upload)|
+| filterImagesAndVideos   |  boolean |     false        |     Enable image and video menu on navbar        |
+| filterPDFs|  boolean |     false        | Enable pdfs menu on navbar |
 | setParentFolder  |  string  |     disabled     |  Drive folder id to upload    |
 | customViews      |ViewClass[]|    optional     |  Array of custom views you want to add to the picker|
 | customScopes      |string[]|    ['https://www.googleapis.com/auth/drive.readonly']     |  Array of custom scopes you want to add to the picker|
@@ -106,8 +110,3 @@ export default App;
 
 [@Jose medina](https://www.linkedin.com/in/jos%C3%A9-medina-56479a128/)
 
-
-## Acknowledgments
-Inspiration, code snippets
-* [sdoomz](https://github.com/sdoomz/react-google-picker)
-* [obonyojimmy](https://github.com/obonyojimmy/react-drive-picker#readme)
