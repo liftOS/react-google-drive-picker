@@ -1,5 +1,5 @@
 {
-  "name": "react-google-drive-picker",
+  "name": "@liftos-js/react-google-drive-picker",
   "version": "1.2.2",
   "description": "React google drive picker api",
   "types": "./dist",
@@ -15,7 +15,7 @@
   "author": "liftOS",
   "repository": {
     "type": "git",
-    "url": "https://github.com/liftOS/react-google-drive-picker.git"
+    "url": "git+https://github.com/liftOS/react-google-drive-picker.git"
   },
   "bugs": {
     "url": "https://github.com/liftOS/react-google-drive-picker/issues"
@@ -46,5 +46,6 @@
   "peerDependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
-  }
+  },
+  "homepage": "https://github.com/liftOS/react-google-drive-picker#readme"
 }
