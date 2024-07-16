@@ -41,6 +41,7 @@ function App() {
       multiselect: true,
       filterImagesAndVideos: true // images and videos menu activated on navbar
       filterPDFs: true // pdfs menu activated on navbar
+      filterFolders: true // folders menu activated on navbar
       // customViews: customViewsArray, // custom view
       callbackFunction: (data) => {
         if (data.action === 'cancel') {
@@ -86,6 +87,7 @@ export default App;
 | showUploadFolders|  boolean |     false        |Enable folder selection(upload)|
 | filterImagesAndVideos   |  boolean |     false        |     Enable image and video menu on navbar        |
 | filterPDFs|  boolean |     false        | Enable pdfs menu on navbar |
+| filterFolders|  boolean |     false        | Enable folders menu on navbar |
 | setParentFolder  |  string  |     disabled     |  Drive folder id to upload    |
 | customViews      |ViewClass[]|    optional     |  Array of custom views you want to add to the picker|
 | customScopes      |string[]|    ['https://www.googleapis.com/auth/drive.readonly']     |  Array of custom scopes you want to add to the picker|

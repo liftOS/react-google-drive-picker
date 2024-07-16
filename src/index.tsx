@@ -121,6 +121,7 @@ export default function useDrivePicker(): [
     navHidden = false,
     filterImagesAndVideos = false,
     filterPDFs = false,
+    filterFolders = false,
   }: PickerConfiguration) => {
     if (disabled) return false
 
@@ -138,6 +139,7 @@ export default function useDrivePicker(): [
     }
 
     const sharedDriveView = new google.picker.DocsView()
+    if (viewMimeTypes) sharedDriveView.setMimeTypes(viewMimeTypes)
     if (setIncludeFolders) sharedDriveView.setIncludeFolders(true)
     if (setSelectFolderEnabled) sharedDriveView.setSelectFolderEnabled(true)
     if (supportDrives) sharedDriveView.setEnableDrives(true)
@@ -166,7 +168,9 @@ export default function useDrivePicker(): [
       picker.addView(view)
     }
 
-    picker.addView(foldersView)
+    if (filterFolders) {
+      picker.addView(foldersView)
+    }
 
     if (supportDrives) {
       picker.addView(sharedDriveView)

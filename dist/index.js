@@ -87,7 +87,7 @@ function useDrivePicker() {
         setpickerApiLoaded(true);
     };
     var createPicker = function (_a) {
-        var token = _a.token, _b = _a.appId, appId = _b === void 0 ? '' : _b, _c = _a.supportDrives, supportDrives = _c === void 0 ? true : _c, developerKey = _a.developerKey, _d = _a.viewId, viewId = _d === void 0 ? 'DOCS' : _d, disabled = _a.disabled, multiselect = _a.multiselect, setOrigin = _a.setOrigin, _e = _a.showUploadView, showUploadView = _e === void 0 ? false : _e, showUploadFolders = _a.showUploadFolders, _f = _a.setParentFolder, setParentFolder = _f === void 0 ? '' : _f, viewMimeTypes = _a.viewMimeTypes, customViews = _a.customViews, _g = _a.locale, locale = _g === void 0 ? 'en' : _g, _h = _a.setIncludeFolders, setIncludeFolders = _h === void 0 ? false : _h, setSelectFolderEnabled = _a.setSelectFolderEnabled, _j = _a.disableDefaultView, disableDefaultView = _j === void 0 ? false : _j, callbackFunction = _a.callbackFunction, _k = _a.navHidden, navHidden = _k === void 0 ? false : _k, _l = _a.filterImagesAndVideos, filterImagesAndVideos = _l === void 0 ? false : _l, _m = _a.filterPDFs, filterPDFs = _m === void 0 ? false : _m;
+        var token = _a.token, _b = _a.appId, appId = _b === void 0 ? '' : _b, _c = _a.supportDrives, supportDrives = _c === void 0 ? true : _c, developerKey = _a.developerKey, _d = _a.viewId, viewId = _d === void 0 ? 'DOCS' : _d, disabled = _a.disabled, multiselect = _a.multiselect, setOrigin = _a.setOrigin, _e = _a.showUploadView, showUploadView = _e === void 0 ? false : _e, showUploadFolders = _a.showUploadFolders, _f = _a.setParentFolder, setParentFolder = _f === void 0 ? '' : _f, viewMimeTypes = _a.viewMimeTypes, customViews = _a.customViews, _g = _a.locale, locale = _g === void 0 ? 'en' : _g, _h = _a.setIncludeFolders, setIncludeFolders = _h === void 0 ? false : _h, setSelectFolderEnabled = _a.setSelectFolderEnabled, _j = _a.disableDefaultView, disableDefaultView = _j === void 0 ? false : _j, callbackFunction = _a.callbackFunction, _k = _a.navHidden, navHidden = _k === void 0 ? false : _k, _l = _a.filterImagesAndVideos, filterImagesAndVideos = _l === void 0 ? false : _l, _m = _a.filterPDFs, filterPDFs = _m === void 0 ? false : _m, _o = _a.filterFolders, filterFolders = _o === void 0 ? false : _o;
         if (disabled)
             return false;
         var view = new google.picker.DocsView(google.picker.ViewId[viewId]);
@@ -107,6 +107,8 @@ function useDrivePicker() {
             view.setParent(setParentFolder);
         }
         var sharedDriveView = new google.picker.DocsView();
+        if (viewMimeTypes)
+            sharedDriveView.setMimeTypes(viewMimeTypes);
         if (setIncludeFolders)
             sharedDriveView.setIncludeFolders(true);
         if (setSelectFolderEnabled)
@@ -132,7 +134,9 @@ function useDrivePicker() {
         if (!disableDefaultView) {
             picker.addView(view);
         }
-        picker.addView(foldersView);
+        if (filterFolders) {
+            picker.addView(foldersView);
+        }
         if (supportDrives) {
             picker.addView(sharedDriveView);
             picker.enableFeature(google.picker.Feature.SUPPORT_DRIVES);

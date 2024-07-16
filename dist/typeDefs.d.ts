@@ -53,6 +53,7 @@ export type PickerConfiguration = {
     navHidden?: boolean;
     filterImagesAndVideos?: boolean;
     filterPDFs?: boolean;
+    filterFolders?: boolean;
     callbackFunction: (data: PickerCallback) => any;
 };
 export declare const defaultConfiguration: PickerConfiguration;
