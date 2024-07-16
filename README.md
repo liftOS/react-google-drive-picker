@@ -108,5 +108,10 @@ export default App;
 
 ## Author
 
-[@Jose medina](https://www.linkedin.com/in/jos%C3%A9-medina-56479a128/)
+[@Selcuk Sarikoz](https://www.linkedin.com/in/selcuk-sarikoz/)
 
+[@Baris Ozdemirci](https://www.linkedin.com/in/ozdemircibaris/)
+
+## Author (v1.2.2)
+
+[@Jose medina](https://www.linkedin.com/in/jos%C3%A9-medina-56479a128/)
