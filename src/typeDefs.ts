@@ -79,3 +79,10 @@ export const defaultConfiguration: PickerConfiguration = {
   viewId: 'DOCS',
   callbackFunction: () => null,
 }
+
+export type AuthResult = {
+	message: string;
+	RY: boolean;
+  stack: string;
+  error: string;
+}

@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare let google: any
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare let window: any
+
 import { useEffect, useState } from 'react'
 import {
   authResult,
@@ -14,28 +15,29 @@ export default function useDrivePicker(): [
   (config: PickerConfiguration) => boolean | undefined,
   authResult | undefined,
 ] {
-  const defaultScopes = ['https://www.googleapis.com/auth/drive.readonly']
+  const defaultScopes = [
+    'https://www.googleapis.com/auth/drive.readonly',
+    'https://www.googleapis.com/auth/drive.file',
+    'https://www.googleapis.com/auth/drive',
+  ]
+
   const [loaded, error] = useInjectScript('https://apis.google.com/js/api.js')
   const [loadedGsi, errorGsi] = useInjectScript(
     'https://accounts.google.com/gsi/client'
   )
-  const [pickerApiLoaded, setpickerApiLoaded] = useState(false)
+  const [pickerApiLoaded, setPickerApiLoaded] = useState(false)
   const [openAfterAuth, setOpenAfterAuth] = useState(false)
-  const [config, setConfig] =
-    useState<PickerConfiguration>(defaultConfiguration)
+  const [config, setConfig] = useState<PickerConfiguration>(defaultConfiguration)
   const [authRes, setAuthRes] = useState<authResult>()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let picker: any
 
-  // get the apis from googleapis
   useEffect(() => {
     if (loaded && !error && loadedGsi && !errorGsi && !pickerApiLoaded) {
       loadApis()
     }
   }, [loaded, error, loadedGsi, errorGsi, pickerApiLoaded])
 
-  // use effect to open picker after auth
   useEffect(() => {
     if (
       openAfterAuth &&
@@ -59,12 +61,29 @@ export default function useDrivePicker(): [
     pickerApiLoaded,
   ])
 
-  // open the picker
+  const handleAuthResult = (authResult: any) => {
+    if (authResult && !authResult.error) {
+      setAuthRes(authResult)
+      setPickerApiLoaded(true)
+    } else {
+      console.error('Authentication error:', authResult.error)
+    }
+  }
+
+  const onAuthApiLoad = () => {
+    window.gapi.auth.authorize(
+      {
+        client_id: config.clientId,
+        scope: defaultScopes,
+        immediate: false,
+      },
+      handleAuthResult
+    )
+  }
+
   const openPicker = (config: PickerConfiguration) => {
-    // global scope given conf
     setConfig(config)
 
-    // if we didnt get token generate token.
     if (!config.token) {
       const client = google.accounts.oauth2.initTokenClient({
         client_id: config.clientId,
@@ -79,24 +98,20 @@ export default function useDrivePicker(): [
       })
 
       client.requestAccessToken()
-    }
-
-    // if we have token and everything is loaded open the picker
-    if (config.token && loaded && !error && pickerApiLoaded) {
+    } else if (loaded && !error && pickerApiLoaded) {
       return createPicker(config)
+    } else {
+      setOpenAfterAuth(true)
     }
   }
 
-  // load the Drive picker api
   const loadApis = () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    window.gapi.load('auth')
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    window.gapi.load('auth', { callback: onAuthApiLoad })
     window.gapi.load('picker', { callback: onPickerApiLoad })
   }
 
   const onPickerApiLoad = () => {
-    setpickerApiLoaded(true)
+    setPickerApiLoaded(true)
   }
 
   const createPicker = ({
@@ -139,6 +154,7 @@ export default function useDrivePicker(): [
     }
 
     const sharedDriveView = new google.picker.DocsView()
+    sharedDriveView.setOwnedByMe(false)
     if (viewMimeTypes) sharedDriveView.setMimeTypes(viewMimeTypes)
     if (setIncludeFolders) sharedDriveView.setIncludeFolders(true)
     if (setSelectFolderEnabled) sharedDriveView.setSelectFolderEnabled(true)
@@ -190,7 +206,7 @@ export default function useDrivePicker(): [
     }
 
     if (customViews) {
-      customViews.map((view) => picker.addView(view))
+      customViews.forEach((view) => picker.addView(view))
     }
 
     if (multiselect) {

@@ -57,4 +57,10 @@ export type PickerConfiguration = {
     callbackFunction: (data: PickerCallback) => any;
 };
 export declare const defaultConfiguration: PickerConfiguration;
+export type AuthResult = {
+    message: string;
+    RY: boolean;
+    stack: string;
+    error: string;
+};
 //# sourceMappingURL=typeDefs.d.ts.map

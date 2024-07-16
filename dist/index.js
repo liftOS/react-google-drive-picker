@@ -28,10 +28,14 @@ var react_1 = require("react");
 var typeDefs_1 = require("./typeDefs");
 var useInjectScript_1 = __importDefault(require("./useInjectScript"));
 function useDrivePicker() {
-    var defaultScopes = ['https://www.googleapis.com/auth/drive.readonly'];
+    var defaultScopes = [
+        'https://www.googleapis.com/auth/drive.readonly',
+        'https://www.googleapis.com/auth/drive.file',
+        'https://www.googleapis.com/auth/drive',
+    ];
     var _a = (0, useInjectScript_1.default)('https://apis.google.com/js/api.js'), loaded = _a[0], error = _a[1];
     var _b = (0, useInjectScript_1.default)('https://accounts.google.com/gsi/client'), loadedGsi = _b[0], errorGsi = _b[1];
-    var _c = (0, react_1.useState)(false), pickerApiLoaded = _c[0], setpickerApiLoaded = _c[1];
+    var _c = (0, react_1.useState)(false), pickerApiLoaded = _c[0], setPickerApiLoaded = _c[1];
     var _d = (0, react_1.useState)(false), openAfterAuth = _d[0], setOpenAfterAuth = _d[1];
     var _e = (0, react_1.useState)(typeDefs_1.defaultConfiguration), config = _e[0], setConfig = _e[1];
     var _f = (0, react_1.useState)(), authRes = _f[0], setAuthRes = _f[1];
@@ -61,6 +65,22 @@ function useDrivePicker() {
         errorGsi,
         pickerApiLoaded,
     ]);
+    var handleAuthResult = function (authResult) {
+        if (authResult && !authResult.error) {
+            setAuthRes(authResult);
+            setPickerApiLoaded(true);
+        }
+        else {
+            console.error('Authentication error:', authResult.error);
+        }
+    };
+    var onAuthApiLoad = function () {
+        window.gapi.auth.authorize({
+            client_id: config.clientId,
+            scope: defaultScopes,
+            immediate: false,
+        }, handleAuthResult);
+    };
     var openPicker = function (config) {
         setConfig(config);
         if (!config.token) {
@@ -75,16 +95,19 @@ function useDrivePicker() {
             });
             client.requestAccessToken();
         }
-        if (config.token && loaded && !error && pickerApiLoaded) {
+        else if (loaded && !error && pickerApiLoaded) {
             return createPicker(config);
+        }
+        else {
+            setOpenAfterAuth(true);
         }
     };
     var loadApis = function () {
-        window.gapi.load('auth');
+        window.gapi.load('auth', { callback: onAuthApiLoad });
         window.gapi.load('picker', { callback: onPickerApiLoad });
     };
     var onPickerApiLoad = function () {
-        setpickerApiLoaded(true);
+        setPickerApiLoaded(true);
     };
     var createPicker = function (_a) {
         var token = _a.token, _b = _a.appId, appId = _b === void 0 ? '' : _b, _c = _a.supportDrives, supportDrives = _c === void 0 ? true : _c, developerKey = _a.developerKey, _d = _a.viewId, viewId = _d === void 0 ? 'DOCS' : _d, disabled = _a.disabled, multiselect = _a.multiselect, setOrigin = _a.setOrigin, _e = _a.showUploadView, showUploadView = _e === void 0 ? false : _e, showUploadFolders = _a.showUploadFolders, _f = _a.setParentFolder, setParentFolder = _f === void 0 ? '' : _f, viewMimeTypes = _a.viewMimeTypes, customViews = _a.customViews, _g = _a.locale, locale = _g === void 0 ? 'en' : _g, _h = _a.setIncludeFolders, setIncludeFolders = _h === void 0 ? false : _h, setSelectFolderEnabled = _a.setSelectFolderEnabled, _j = _a.disableDefaultView, disableDefaultView = _j === void 0 ? false : _j, callbackFunction = _a.callbackFunction, _k = _a.navHidden, navHidden = _k === void 0 ? false : _k, _l = _a.filterImagesAndVideos, filterImagesAndVideos = _l === void 0 ? false : _l, _m = _a.filterPDFs, filterPDFs = _m === void 0 ? false : _m, _o = _a.filterFolders, filterFolders = _o === void 0 ? false : _o;
@@ -107,6 +130,7 @@ function useDrivePicker() {
             view.setParent(setParentFolder);
         }
         var sharedDriveView = new google.picker.DocsView();
+        sharedDriveView.setOwnedByMe(false);
         if (viewMimeTypes)
             sharedDriveView.setMimeTypes(viewMimeTypes);
         if (setIncludeFolders)
@@ -151,7 +175,7 @@ function useDrivePicker() {
             picker.enableFeature(google.picker.Feature.NAV_HIDDEN);
         }
         if (customViews) {
-            customViews.map(function (view) { return picker.addView(view); });
+            customViews.forEach(function (view) { return picker.addView(view); });
         }
         if (multiselect) {
             picker.enableFeature(google.picker.Feature.MULTISELECT_ENABLED);

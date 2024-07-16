@@ -90,7 +90,7 @@ export default App;
 | filterFolders|  boolean |     false        | Enable folders menu on navbar |
 | setParentFolder  |  string  |     disabled     |  Drive folder id to upload    |
 | customViews      |ViewClass[]|    optional     |  Array of custom views you want to add to the picker|
-| customScopes      |string[]|    ['https://www.googleapis.com/auth/drive.readonly']     |  Array of custom scopes you want to add to the picker|
+| customScopes      |string[]|    ['https://www.googleapis.com/auth/drive.readonly', 'https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/drive']     |  Array of custom scopes you want to add to the picker|
 | locale           |string    |    en            | List of supported locales https://developers.google.com/picker/docs#i18n|
 
 
