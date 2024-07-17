@@ -47,6 +47,7 @@ export type ViewIdOptions =
   | 'PRESENTATIONS'
 
 export type PickerConfiguration = {
+  title?: string;
   clientId: string
   developerKey: string
   viewId?: ViewIdOptions
@@ -70,6 +71,7 @@ export type PickerConfiguration = {
   filterImagesAndVideos?: boolean;
   filterPDFs?: boolean;
   filterFolders?: boolean;
+  filterStarred?: boolean;
   callbackFunction: (data: PickerCallback) => any
 }
 

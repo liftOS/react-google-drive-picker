@@ -16,9 +16,9 @@ export default function useDrivePicker(): [
   authResult | undefined,
 ] {
   const defaultScopes = [
-    'https://www.googleapis.com/auth/drive.readonly',
-    'https://www.googleapis.com/auth/drive.file',
-    'https://www.googleapis.com/auth/drive',
+    "https://www.googleapis.com/auth/drive.readonly",
+    "https://www.googleapis.com/auth/drive.file",
+    "https://www.googleapis.com/auth/drive.metadata"
   ]
 
   const [loaded, error] = useInjectScript('https://apis.google.com/js/api.js')
@@ -87,10 +87,9 @@ export default function useDrivePicker(): [
     if (!config.token) {
       const client = google.accounts.oauth2.initTokenClient({
         client_id: config.clientId,
-        scope: (config.customScopes
-          ? [...defaultScopes, ...config.customScopes]
-          : defaultScopes
-        ).join(' '),
+        scope: [...(defaultScopes || []), ...(config?.customScopes || [])].join(
+          ' '
+        ),
         callback: (tokenResponse: authResult) => {
           setAuthRes(tokenResponse)
           createPicker({ ...config, token: tokenResponse.access_token })
@@ -115,6 +114,7 @@ export default function useDrivePicker(): [
   }
 
   const createPicker = ({
+    title,
     token,
     appId = '',
     supportDrives = true,
@@ -137,6 +137,7 @@ export default function useDrivePicker(): [
     filterImagesAndVideos = false,
     filterPDFs = false,
     filterFolders = false,
+    filterStarred = true,
   }: PickerConfiguration) => {
     if (disabled) return false
 
@@ -144,6 +145,12 @@ export default function useDrivePicker(): [
     if (viewMimeTypes) view.setMimeTypes(viewMimeTypes)
     if (setIncludeFolders) view.setIncludeFolders(true)
     if (setSelectFolderEnabled) view.setSelectFolderEnabled(true)
+
+    const starredView = new google.picker.DocsView(google.picker.ViewId[viewId])
+    starredView.setStarred(filterStarred).setLabel("Starred")
+    if (viewMimeTypes) starredView.setMimeTypes(viewMimeTypes)
+    if (setIncludeFolders) starredView.setIncludeFolders(true)
+    if (setSelectFolderEnabled) starredView.setSelectFolderEnabled(true)
 
     const uploadView = new google.picker.DocsUploadView()
     if (viewMimeTypes) uploadView.setMimeTypes(viewMimeTypes)
@@ -213,8 +220,15 @@ export default function useDrivePicker(): [
       picker.enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
     }
 
-    if (showUploadView) picker.addView(uploadView)
+    if (showUploadView) {
+      picker.addView(uploadView)
+    }
 
+    if(filterStarred) {
+      picker.addView(starredView)
+    }
+
+    picker.setTitle(title || 'Google Drive Picker')
     picker.build().setVisible(true)
     return true
   }

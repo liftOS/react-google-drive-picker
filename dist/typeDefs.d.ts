@@ -31,6 +31,7 @@ export type authResult = {
 };
 export type ViewIdOptions = 'DOCS' | 'DOCS_IMAGES' | 'DOCS_IMAGES_AND_VIDEOS' | 'DOCS_VIDEOS' | 'DOCUMENTS' | 'DRAWINGS' | 'FOLDERS' | 'FORMS' | 'PDFS' | 'SPREADSHEETS' | 'PRESENTATIONS';
 export type PickerConfiguration = {
+    title?: string;
     clientId: string;
     developerKey: string;
     viewId?: ViewIdOptions;
@@ -54,6 +55,7 @@ export type PickerConfiguration = {
     filterImagesAndVideos?: boolean;
     filterPDFs?: boolean;
     filterFolders?: boolean;
+    filterStarred?: boolean;
     callbackFunction: (data: PickerCallback) => any;
 };
 export declare const defaultConfiguration: PickerConfiguration;

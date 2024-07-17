@@ -31,6 +31,7 @@ function App() {
   // const customViewsArray = [new google.picker.DocsView()]; // custom view
   const handleOpenPicker = () => {
     openPicker({
+      // title: "Acme Group", -> optional
       clientId: "xxxxxxxxxxxxxxxxx",
       developerKey: "xxxxxxxxxxxx",
       viewId: "DOCS",
@@ -41,6 +42,7 @@ function App() {
       multiselect: true,
       filterImagesAndVideos: true // images and videos menu activated on navbar
       filterPDFs: true // pdfs menu activated on navbar
+      filterStarred: true // starred menu activated on navbar. display starred files and folders
       filterFolders: true // folders menu activated on navbar
       // customViews: customViewsArray, // custom view
       callbackFunction: (data) => {
@@ -90,7 +92,7 @@ export default App;
 | filterFolders|  boolean |     false        | Enable folders menu on navbar |
 | setParentFolder  |  string  |     disabled     |  Drive folder id to upload    |
 | customViews      |ViewClass[]|    optional     |  Array of custom views you want to add to the picker|
-| customScopes      |string[]|    ['https://www.googleapis.com/auth/drive.readonly', 'https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/drive']     |  Array of custom scopes you want to add to the picker|
+| customScopes      |string[]|    ["https://www.googleapis.com/auth/drive.readonly", "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive.metadata"]     |  Array of custom scopes you want to add to the picker|
 | locale           |string    |    en            | List of supported locales https://developers.google.com/picker/docs#i18n|
 
 
