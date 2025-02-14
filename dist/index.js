@@ -262,7 +262,6 @@ function useDrivePicker() {
                     callbackFunction === null || callbackFunction === void 0 ? void 0 : callbackFunction({ action: "cancel", docs: [] });
                     setTimeout(function () {
                         if (picker) {
-                            picker.setVisible(false);
                             setPickerInstance(null);
                         }
                         pickerDialogs === null || pickerDialogs === void 0 ? void 0 : pickerDialogs.forEach(function (it) { return it.remove(); });

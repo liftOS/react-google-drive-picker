@@ -269,7 +269,6 @@ export default function useDrivePicker(): [
             callbackFunction?.({ action: "cancel", docs: [] });
             setTimeout(() => {
               if (picker) {
-                picker.setVisible(false);
                 setPickerInstance(null);
               }
               pickerDialogs?.forEach((it) => it.remove());
