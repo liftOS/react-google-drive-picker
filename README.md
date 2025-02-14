@@ -55,6 +55,9 @@ function App() {
         if (data.action === 'cancel') {
           console.log('User clicked cancel/close button')
         }
+        if (data.action === 'tokenError') {
+          console.log('Token is invalid')
+        }
         console.log(data)
       },
     })

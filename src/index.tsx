@@ -12,6 +12,22 @@ import {
 } from "./typeDefs";
 import useInjectScript from "./useInjectScript";
 
+// Define a type for your picker callback
+export type PickerCallback = (data: {
+  action: string;
+  docs: CallbackDoc[];
+}) => void;
+
+// Define a type for your selected documents (replace with your actual type)
+export interface IGoogleDriveDoc {
+  id: string;
+  name: string;
+  mimeType: string;
+  // Add other properties as needed
+}
+
+export type GooglePickerActionsType = "loaded" | "cancel" | "picked" | "tokenError";
+
 export default function useDrivePicker(): [
   (config: PickerConfiguration) => boolean | undefined,
   authResult | undefined,
@@ -31,8 +47,8 @@ export default function useDrivePicker(): [
   const [config, setConfig] =
     useState<PickerConfiguration>(defaultConfiguration);
   const [authRes, setAuthRes] = useState<authResult>();
-
-  let picker: any;
+  const [pickerInstance, setPickerInstance] = useState<any>(null);
+  const [tokenInvalid, setTokenInvalid] = useState(false);
 
   useEffect(() => {
     if (loaded && !error && loadedGsi && !errorGsi && !pickerApiLoaded) {
@@ -48,7 +64,8 @@ export default function useDrivePicker(): [
       !error &&
       loadedGsi &&
       !errorGsi &&
-      pickerApiLoaded
+      pickerApiLoaded &&
+      !tokenInvalid
     ) {
       createPicker(config);
       setOpenAfterAuth(false);
@@ -61,14 +78,19 @@ export default function useDrivePicker(): [
     loadedGsi,
     errorGsi,
     pickerApiLoaded,
+    tokenInvalid,
   ]);
 
   const handleAuthResult = (authResult: any) => {
     if (authResult && !authResult.error) {
       setAuthRes(authResult);
       setPickerApiLoaded(true);
+      setTokenInvalid(false);
     } else {
       console.error("Authentication error:", authResult.error);
+      setTokenInvalid(true);
+      closePicker();
+      config.callbackFunction?.({ action: "tokenError", docs: [] }); // <== Callback on auth failure
     }
   };
 
@@ -83,8 +105,32 @@ export default function useDrivePicker(): [
     );
   };
 
+  const closePicker = () => {
+    const pickerDialogs = document.querySelectorAll(".picker-dialog");
+    const pickerDialogsBg = document.querySelectorAll(".picker-dialog-bg");
+
+    if (pickerInstance) {
+      try {
+        pickerInstance.setVisible(false);
+      } catch (e) {
+        console.error("Error hiding picker:", e);
+      }
+
+      setPickerInstance(null);
+    }
+
+    pickerDialogs?.forEach((it) => it.remove());
+    pickerDialogsBg?.forEach((it) => it.remove());
+  };
+
   const openPicker = (config: PickerConfiguration) => {
     setConfig(config);
+
+    if (tokenInvalid) {
+      console.warn("Token is invalid, not opening picker.");
+      config.callbackFunction?.({ action: "tokenError", docs: [] }); // <== Callback when token is invalid
+      return false;
+    }
 
     if (!config.token) {
       const client = google.accounts.oauth2.initTokenClient({
@@ -93,17 +139,44 @@ export default function useDrivePicker(): [
           " ",
         ),
         callback: (tokenResponse: authResult) => {
-          setAuthRes(tokenResponse);
-          createPicker({ ...config, token: tokenResponse.access_token });
+          if (tokenResponse && tokenResponse.access_token) {
+            setAuthRes(tokenResponse);
+            setTokenInvalid(false);
+            createPicker({ ...config, token: tokenResponse.access_token });
+          } else {
+            console.error("Token retrieval failed:", tokenResponse);
+            setTokenInvalid(true);
+            closePicker();
+            config.callbackFunction?.({ action: "tokenError", docs: [] }); // <== Callback on token fetch failure
+          }
+        },
+        error_callback: (error: any) => {
+          console.error("Error during token retrieval:", error);
+          setTokenInvalid(true);
+          closePicker();
+          config.callbackFunction?.({ action: "tokenError", docs: [] }); // <== Callback on token fetch error
         },
       });
 
       client.requestAccessToken();
     } else if (loaded && !error && pickerApiLoaded) {
-      return createPicker(config);
+      validateToken(config.token)
+        .then(() => {
+          createPicker(config);
+        })
+        .catch(() => {
+          console.error("Token validation failed, not opening picker.");
+          setTokenInvalid(true);
+          closePicker();
+          config.callbackFunction?.({ action: "tokenError", docs: [] }); // <== Callback on validation failure
+        });
+
+      return true;
     } else {
       setOpenAfterAuth(true);
     }
+
+    return undefined;
   };
 
   const loadApis = () => {
@@ -141,7 +214,7 @@ export default function useDrivePicker(): [
     filterFolders = false,
     filterStarred = true,
   }: PickerConfiguration) => {
-    if (disabled) return false;
+    if (disabled || tokenInvalid) return false;
 
     const view = new google.picker.DocsView(google.picker.ViewId[viewId]);
     if (viewMimeTypes) view.setMimeTypes(viewMimeTypes);
@@ -182,7 +255,7 @@ export default function useDrivePicker(): [
     );
     const pdfs = new google.picker.DocsView(google.picker.ViewId.PDFS);
 
-    picker = new google.picker.PickerBuilder()
+    const picker = new google.picker.PickerBuilder()
       .setAppId(appId)
       .setOAuthToken(token)
       .setDeveloperKey(developerKey)
@@ -195,7 +268,10 @@ export default function useDrivePicker(): [
           if (close || data?.docs?.length) {
             callbackFunction?.({ action: "cancel", docs: [] });
             setTimeout(() => {
-              picker.build().setVisible(false);
+              if (picker) {
+                picker.setVisible(false);
+                setPickerInstance(null);
+              }
               pickerDialogs?.forEach((it) => it.remove());
               pickerDialogsBg?.forEach((it) => it.remove());
             }, 100);
@@ -260,8 +336,33 @@ export default function useDrivePicker(): [
     }
 
     picker.setTitle(title || "Google Drive Picker");
-    picker.build().setVisible(true);
+    const builtPicker = picker.build();
+    setPickerInstance(builtPicker);
+    builtPicker.setVisible(true);
+
     return true;
+  };
+
+  const validateToken = async (token: string): Promise<void> => {
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${token}`,
+      );
+
+      if (!response.ok) {
+        console.error("Token validation failed:", response.status, response.statusText);
+        setTokenInvalid(true);
+        throw new Error(`Token validation failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Token validation successful:", data);
+      setTokenInvalid(false);
+    } catch (error: any) {
+      console.error("Error validating token:", error);
+      setTokenInvalid(true);
+      throw error;
+    }
   };
 
   return [openPicker, authRes];
