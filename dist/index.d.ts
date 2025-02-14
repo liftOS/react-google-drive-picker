@@ -1,4 +1,4 @@
-import { authResult, PickerConfiguration } from './typeDefs';
+import { authResult, PickerConfiguration } from "./typeDefs";
 export default function useDrivePicker(): [
     (config: PickerConfiguration) => boolean | undefined,
     authResult | undefined

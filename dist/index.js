@@ -31,10 +31,10 @@ function useDrivePicker() {
     var defaultScopes = [
         "https://www.googleapis.com/auth/drive.readonly",
         "https://www.googleapis.com/auth/drive.file",
-        "https://www.googleapis.com/auth/drive.metadata"
+        "https://www.googleapis.com/auth/drive.metadata",
     ];
-    var _a = (0, useInjectScript_1.default)('https://apis.google.com/js/api.js'), loaded = _a[0], error = _a[1];
-    var _b = (0, useInjectScript_1.default)('https://accounts.google.com/gsi/client'), loadedGsi = _b[0], errorGsi = _b[1];
+    var _a = (0, useInjectScript_1.default)("https://apis.google.com/js/api.js"), loaded = _a[0], error = _a[1];
+    var _b = (0, useInjectScript_1.default)("https://accounts.google.com/gsi/client"), loadedGsi = _b[0], errorGsi = _b[1];
     var _c = (0, react_1.useState)(false), pickerApiLoaded = _c[0], setPickerApiLoaded = _c[1];
     var _d = (0, react_1.useState)(false), openAfterAuth = _d[0], setOpenAfterAuth = _d[1];
     var _e = (0, react_1.useState)(typeDefs_1.defaultConfiguration), config = _e[0], setConfig = _e[1];
@@ -71,7 +71,7 @@ function useDrivePicker() {
             setPickerApiLoaded(true);
         }
         else {
-            console.error('Authentication error:', authResult.error);
+            console.error("Authentication error:", authResult.error);
         }
     };
     var onAuthApiLoad = function () {
@@ -86,7 +86,7 @@ function useDrivePicker() {
         if (!config.token) {
             var client = google.accounts.oauth2.initTokenClient({
                 client_id: config.clientId,
-                scope: __spreadArray(__spreadArray([], (defaultScopes || []), true), ((config === null || config === void 0 ? void 0 : config.customScopes) || []), true).join(' '),
+                scope: __spreadArray(__spreadArray([], (defaultScopes || []), true), ((config === null || config === void 0 ? void 0 : config.customScopes) || []), true).join(" "),
                 callback: function (tokenResponse) {
                     setAuthRes(tokenResponse);
                     createPicker(__assign(__assign({}, config), { token: tokenResponse.access_token }));
@@ -102,14 +102,14 @@ function useDrivePicker() {
         }
     };
     var loadApis = function () {
-        window.gapi.load('auth', { callback: onAuthApiLoad });
-        window.gapi.load('picker', { callback: onPickerApiLoad });
+        window.gapi.load("auth", { callback: onAuthApiLoad });
+        window.gapi.load("picker", { callback: onPickerApiLoad });
     };
     var onPickerApiLoad = function () {
         setPickerApiLoaded(true);
     };
     var createPicker = function (_a) {
-        var title = _a.title, token = _a.token, _b = _a.appId, appId = _b === void 0 ? '' : _b, _c = _a.supportDrives, supportDrives = _c === void 0 ? true : _c, developerKey = _a.developerKey, _d = _a.viewId, viewId = _d === void 0 ? 'DOCS' : _d, disabled = _a.disabled, multiselect = _a.multiselect, setOrigin = _a.setOrigin, _e = _a.showUploadView, showUploadView = _e === void 0 ? false : _e, showUploadFolders = _a.showUploadFolders, _f = _a.setParentFolder, setParentFolder = _f === void 0 ? '' : _f, viewMimeTypes = _a.viewMimeTypes, customViews = _a.customViews, _g = _a.locale, locale = _g === void 0 ? 'en' : _g, _h = _a.setIncludeFolders, setIncludeFolders = _h === void 0 ? false : _h, setSelectFolderEnabled = _a.setSelectFolderEnabled, _j = _a.disableDefaultView, disableDefaultView = _j === void 0 ? false : _j, callbackFunction = _a.callbackFunction, _k = _a.navHidden, navHidden = _k === void 0 ? false : _k, _l = _a.filterImagesAndVideos, filterImagesAndVideos = _l === void 0 ? false : _l, _m = _a.filterPDFs, filterPDFs = _m === void 0 ? false : _m, _o = _a.filterFolders, filterFolders = _o === void 0 ? false : _o, _p = _a.filterStarred, filterStarred = _p === void 0 ? true : _p;
+        var title = _a.title, token = _a.token, _b = _a.appId, appId = _b === void 0 ? "" : _b, _c = _a.supportDrives, supportDrives = _c === void 0 ? true : _c, developerKey = _a.developerKey, _d = _a.viewId, viewId = _d === void 0 ? "DOCS" : _d, disabled = _a.disabled, multiselect = _a.multiselect, setOrigin = _a.setOrigin, _e = _a.showUploadView, showUploadView = _e === void 0 ? false : _e, showUploadFolders = _a.showUploadFolders, _f = _a.setParentFolder, setParentFolder = _f === void 0 ? "" : _f, viewMimeTypes = _a.viewMimeTypes, customViews = _a.customViews, _g = _a.locale, locale = _g === void 0 ? "en" : _g, _h = _a.setIncludeFolders, setIncludeFolders = _h === void 0 ? false : _h, setSelectFolderEnabled = _a.setSelectFolderEnabled, _j = _a.disableDefaultView, disableDefaultView = _j === void 0 ? false : _j, callbackFunction = _a.callbackFunction, _k = _a.navHidden, navHidden = _k === void 0 ? false : _k, _l = _a.filterImagesAndVideos, filterImagesAndVideos = _l === void 0 ? false : _l, _m = _a.filterPDFs, filterPDFs = _m === void 0 ? false : _m, _o = _a.filterFolders, filterFolders = _o === void 0 ? false : _o, _p = _a.filterStarred, filterStarred = _p === void 0 ? true : _p;
         if (disabled)
             return false;
         var view = new google.picker.DocsView(google.picker.ViewId[viewId]);
@@ -158,7 +158,29 @@ function useDrivePicker() {
             .setOAuthToken(token)
             .setDeveloperKey(developerKey)
             .setLocale(locale)
-            .setCallback(callbackFunction);
+            .setCallback(function (data) {
+            var pickerDialogs = document.querySelectorAll(".picker-dialog");
+            var pickerDialogsBg = document.querySelectorAll(".picker-dialog-bg");
+            function clearView(close) {
+                var _a;
+                if (close || ((_a = data === null || data === void 0 ? void 0 : data.docs) === null || _a === void 0 ? void 0 : _a.length)) {
+                    callbackFunction === null || callbackFunction === void 0 ? void 0 : callbackFunction({ action: "cancel", docs: [] });
+                    setTimeout(function () {
+                        picker.build().setVisible(false);
+                        pickerDialogs === null || pickerDialogs === void 0 ? void 0 : pickerDialogs.forEach(function (it) { return it.remove(); });
+                        pickerDialogsBg === null || pickerDialogsBg === void 0 ? void 0 : pickerDialogsBg.forEach(function (it) { return it.remove(); });
+                    }, 100);
+                }
+            }
+            pickerDialogsBg === null || pickerDialogsBg === void 0 ? void 0 : pickerDialogsBg.forEach(function (it) {
+                var elem = it;
+                elem.onclick = function () {
+                    clearView(true);
+                };
+            });
+            callbackFunction === null || callbackFunction === void 0 ? void 0 : callbackFunction(data);
+            clearView((data === null || data === void 0 ? void 0 : data.action) === "cancel");
+        });
         if (setOrigin) {
             picker.setOrigin(setOrigin);
         }
@@ -193,7 +215,7 @@ function useDrivePicker() {
         if (filterStarred) {
             picker.addView(starredView);
         }
-        picker.setTitle(title || 'Google Drive Picker');
+        picker.setTitle(title || "Google Drive Picker");
         picker.build().setVisible(true);
         return true;
     };
